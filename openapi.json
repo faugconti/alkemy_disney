@@ -1,0 +1,1029 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Disney API",
+    "description": "Documentation for the NodeJS alkemy challenge API made with nodeJS. Check the repository for more information https://github.com/faugconti/...",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Genres",
+      "description": "Endpoint for managing genres."
+    },
+    {
+      "name": "Movies",
+      "description": "Endpoint for managing movies."
+    },
+    {
+      "name": "Characters",
+      "description": "Endpoint for managing characters."
+    },
+    {
+      "name": "Auth",
+      "description": "Endpoint for authentication."
+    }
+  ],
+  "paths": {
+    "/genre": {
+      "get": {
+        "tags": [
+          "Genres"
+        ],
+        "summary": "Get All genres from the database.",
+        "responses": {
+          "200": {
+            "description": "(OK) Retrieve all movies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Sci-Fi"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Genres"
+        ],
+        "summary": "Add a new genre to the database. Payload is required.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Comedy"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) resource created."
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/genre/{genreId}": {
+      "delete": {
+        "tags": [
+          "Genres"
+        ],
+        "summary": "Delete a specific genre from the database using its id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "genreId",
+            "description": "Identifier of the genre.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) resource deleted."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/movies": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Get all movies from the database. Query parameters for better filtering are optional.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "title",
+            "description": "Name of the movie",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "genre",
+            "description": "Id of the movie genre for filtering. Min value 1.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "description": "Used for ordering the retrieved list.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Retrieve all movies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllMovies"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Add a new movie to the database. Payload is required.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/moviesPOST"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) Resource created."
+          },
+          "401": {
+            "$ref": "#/components/responses/authenticationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/movies/{movieId}": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Get a specific movie from the database using its id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "description": "Identifier of the movie.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Retrieve movie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getCompleteMovie"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Modify a specific movie from the database using its id. Payload is required.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "description": "Identifier of the movie.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/moviesPUT"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) movie updated."
+          },
+          "401": {
+            "$ref": "#/components/responses/authenticationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Movies"
+        ],
+        "summary": "Delete a specific movie from the database using its id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "movieId",
+            "description": "Identifier of the movie.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) resource deleted."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/characters": {
+      "get": {
+        "tags": [
+          "Characters"
+        ],
+        "summary": "Get all characters from the database. Query parameters for better filtering are optional.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "movieId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "age",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Retrieve all characters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getAllCharacters"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Characters"
+        ],
+        "summary": "Add a new character to the database. Payload is required.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/characterPOST"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) Resource created."
+          },
+          "401": {
+            "$ref": "#/components/responses/authenticationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/characters/{characterId}": {
+      "get": {
+        "tags": [
+          "Characters"
+        ],
+        "summary": "Get a specific character from the database using its id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "characterId",
+            "description": "identifier of the character.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) Retrieve all characters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getCharacterById"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Characters"
+        ],
+        "summary": "Modify a specific character from the database using its id. Payload is required.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "characterId",
+            "description": "identifier of the character.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateCharacter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "(OK) Character updated."
+          },
+          "401": {
+            "$ref": "#/components/responses/authenticationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Characters"
+        ],
+        "summary": "Delete a specific character from the database using its id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "(OK) resource deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/authenticationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "characterId",
+            "description": "Identifier of the movie.",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Signup in the system. Payload is required.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "(OK) user created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "(OK) user created but with server errors."
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Signin in the system. Payload is required.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/auth"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "(OK) user logged in.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/badRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/serverError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "badRequest": {
+        "description": "(Bad request) check your inputs."
+      },
+      "authenticationError": {
+        "description": "(Bad credentials) Authentication failed."
+      },
+      "NotFound": {
+        "description": "(Not Found) resource not found."
+      },
+      "serverError": {
+        "description": "(Server Error) error processing the request."
+      }
+    },
+    "schemas": {
+      "getCompleteMovie": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID for the movie stored in database.",
+            "example": 14
+          },
+          "title": {
+            "type": "string",
+            "description": "Name of the movie.",
+            "example": "Pocahontas 2"
+          },
+          "image": {
+            "type": "string",
+            "description": "URL of the movies poster.",
+            "example": "https://static.wikia.nocookie.net/doblaje/images/6/65/PocahontasII.jpg/revision/latest?cb=20170323015936&path-prefix=es"
+          },
+          "rating": {
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "description": "Rating of the movie. Values from 1 to 5 .",
+            "example": 4
+          },
+          "created": {
+            "type": "string",
+            "description": "Release date of the movie.",
+            "example": "1998/08/25"
+          },
+          "genreId": {
+            "type": "integer",
+            "description": "id of the movie's genre.",
+            "example": 1
+          },
+          "characters": {
+            "type": "array",
+            "description": "array of characters that appear in the movie.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "ID of the character.",
+                  "example": 4
+                },
+                "name": {
+                  "type": "string",
+                  "description": "name of the character.",
+                  "example": "Meeko"
+                },
+                "image": {
+                  "type": "string",
+                  "description": "URL for the character image.",
+                  "example": "https://static.wikia.nocookie.net/disney/images/1/13/Miko.png/revision/latest/scale-to-width-down/317?cb=20150327101659&path-prefix=es"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetAllMovies": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "ID for the movie stored in database.",
+              "example": 14
+            },
+            "title": {
+              "type": "string",
+              "description": "Name of the movie.",
+              "example": "Pocahontas 2"
+            },
+            "image": {
+              "type": "string",
+              "description": "URL of the movie poster.",
+              "example": "https://static.wikia.nocookie.net/doblaje/images/6/65/PocahontasII.jpg/revision/latest?cb=20170323015936&path-prefix=es"
+            },
+            "created": {
+              "type": "string",
+              "description": "Release date of the movie.",
+              "example": "1998/08/25"
+            }
+          }
+        }
+      },
+      "moviesPOST": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Name of the movie.",
+            "example": "Pocahontas 3"
+          },
+          "image": {
+            "type": "string",
+            "description": "URL of the movie poster.",
+            "example": "https://static.wikia.nocookie.net/doblaje/images/6/65/PocahontasII.jpg/revision/latest?cb=20170323015936&path-prefix=es"
+          },
+          "created": {
+            "type": "string",
+            "description": "Release date of the movie.",
+            "example": "2005/12/03"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "Integer between 1 and 5.",
+            "example": 4
+          },
+          "type": {
+            "type": "string",
+            "description": "ENUM of (MOVIE,SHOW).",
+            "example": "MOVIE"
+          },
+          "genre": {
+            "type": "integer",
+            "description": "Genre identifier (id) of the movie.",
+            "example": 1
+          }
+        }
+      },
+      "moviesPUT": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Name of the movie.",
+            "example": "Pocahontas 3"
+          },
+          "image": {
+            "type": "string",
+            "description": "URL of the movie poster.",
+            "example": "https://static.wikia.nocookie.net/doblaje/images/6/65/PocahontasII.jpg/revision/latest?cb=20170323015936&path-prefix=es"
+          },
+          "created": {
+            "type": "string",
+            "description": "Release date of the movie.",
+            "example": "2005/12/03"
+          },
+          "type": {
+            "type": "string",
+            "description": "Enum of type SHOW|MOVIE",
+            "example": "MOVIE"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "Integer value between 1 and 5",
+            "example": 2
+          }
+        }
+      },
+      "getAllCharacters": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "ID for the character stored in DB.",
+              "example": 4
+            },
+            "name": {
+              "type": "string",
+              "description": "name of the character.",
+              "example": "Jango Fett"
+            },
+            "age": {
+              "type": "integer",
+              "description": "age of the character.",
+              "example": 45
+            },
+            "image": {
+              "type": "string",
+              "description": "URL of the character image.",
+              "example": "https://static.wikia.nocookie.net/esstarwars/images/6/6e/286334-10659-jango-fett_large-0.jpg/revision/latest/top-crop/width/360/height/450?cb=20170728225232"
+            },
+            "weight": {
+              "type": "integer",
+              "description": "weight of the character.",
+              "example": 85
+            },
+            "history": {
+              "type": "string",
+              "description": "the character life history",
+              "example": "Jango Fett was a famed Mandalorian human male bounty hunter and the clone template of the Grand Army of the Republic. Known as the best bounty hunter in the galaxy during the final years of the Galactic Republic."
+            }
+          }
+        }
+      },
+      "getCharacterById": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID for the character stored in DB.",
+            "example": 4
+          },
+          "name": {
+            "type": "string",
+            "description": "name of the character.",
+            "example": "Jango Fett"
+          },
+          "age": {
+            "type": "integer",
+            "description": "age of the character.",
+            "example": 45
+          },
+          "image": {
+            "type": "string",
+            "description": "URL of the character image.",
+            "example": "https://static.wikia.nocookie.net/esstarwars/images/6/6e/286334-10659-jango-fett_large-0.jpg/revision/latest/top-crop/width/360/height/450?cb=20170728225232"
+          },
+          "weight": {
+            "type": "integer",
+            "description": "weight of the character.",
+            "example": 85
+          },
+          "history": {
+            "type": "string",
+            "description": "the character life history",
+            "example": "Jango Fett was a famed Mandalorian human male bounty hunter and the clone template of the Grand Army of the Republic. Known as the best bounty hunter in the galaxy during the final years of the Galactic Republic."
+          },
+          "media": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "movieId",
+                  "example": 3
+                },
+                "title": {
+                  "type": "string",
+                  "description": "name of the movie",
+                  "example": "Star Wars II the clone wars"
+                },
+                "type": {
+                  "enum": [
+                    "MOVIE",
+                    "SHOW"
+                  ],
+                  "example": "MOVIE",
+                  "description": "media type"
+                },
+                "created": {
+                  "description": "release date of the movie",
+                  "type": "string",
+                  "example": "2002/05/16"
+                }
+              }
+            }
+          }
+        }
+      },
+      "updateCharacter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Din Djarin",
+            "description": "name of the character"
+          },
+          "age": {
+            "type": "integer",
+            "example": 35,
+            "description": "age of the character"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://static.wikia.nocookie.net/esstarwars/images/8/8a/Pascal_as_The_Mando-Advanced_Graphics.png/revision/latest/scale-to-width-down/350?cb=20191205034457",
+            "description": "image of the character"
+          },
+          "weight": {
+            "type": "number",
+            "example": 89,
+            "description": "weight (kg) of the character."
+          },
+          "history": {
+            "type": "string",
+            "example": "A mandalorian bounty hunter. Father of grogu.",
+            "description": "Descriptive history of the character."
+          }
+        }
+      },
+      "characterPOST": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "R2D2",
+            "description": "name of the character"
+          },
+          "age": {
+            "type": "integer",
+            "example": 65,
+            "description": "age of the character"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://static.wikia.nocookie.net/esstarwars/images/e/eb/ArtooTFA2-Fathead.png/revision/latest?cb=20150926172435",
+            "description": "image of the character (optional)"
+          },
+          "weight": {
+            "type": "number",
+            "example": 15.5,
+            "description": "weight(kg) of the character."
+          },
+          "history": {
+            "type": "string",
+            "example": "An old droid model R2.",
+            "description": "Descriptive history of the character (optional)."
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "description": "Identifiers of the movies (id) (optional, must exist before creating character).",
+              "example": 2
+            }
+          }
+        }
+      },
+      "auth": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "email address of the new user",
+            "example": "example@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "password of the new user",
+            "example": "yourpassword"
+          }
+        }
+      },
+      "authResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "email address of the created user",
+            "example": "user@email.com"
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT token used for authentication.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3Q1QHRlc3QuY29tIiwiaWF0IjoxNjQ0OTgxMzIxfQ.jC1rXa_xuOWfqfm8YNCywlmTM-APR8bt9Dg2FPCGJvw"
+          }
+        }
+      }
+    }
+  }
+}
