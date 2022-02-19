@@ -5,7 +5,7 @@ const cors = require("cors");
 const sequelize = require("./database/database");
 require("dotenv").config();
 require("./models/associations");
-const swaggerFile = require("../openapi.json");
+const swaggerFile = require("./openapi.json");
 
 const app = express();
 app.use(cors());
