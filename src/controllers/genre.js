@@ -34,11 +34,13 @@ exports.createGenre = async (req, res, next) => {
 };
 
 exports.deleteGenre = async (req, res, next) => {
+  console.log(req.params);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(new HttpError("Invalid inputs, please check your data", 422));
+    return next(
+      new HttpError("(422) Invalid inputs, please check your data", 422)
+    );
   }
-
   const id = req.params.id;
   let genre;
 

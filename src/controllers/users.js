@@ -11,8 +11,8 @@ const signup = async (req, res, next) => {
     return next(new HttpError("Invalid inputs, please check your data", 422));
   }
 
-  const useEmailService = process.env.EMAIL_FLAG;
-
+  const useEmailService = process.env.EMAIL_FLAG || false;
+  console.log(useEmailService);
   const { email, password } = req.body;
   let existingUser;
   try {

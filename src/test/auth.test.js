@@ -5,7 +5,7 @@ const { User } = require("../models");
 chai.use(chaiHttp);
 chai.should();
 
-const requester = chai.request("http://localhost:8080").keepOpen();
+const requester = chai.request("http://localhost:8080/api").keepOpen();
 
 // pre-stored in DB (seed)
 const registeredUser = {

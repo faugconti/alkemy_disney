@@ -8,7 +8,7 @@ router.get("", genreController.getGenres);
 router.use(isAuth);
 router.post(
   "",
-  [body("name").isString().exists()],
+  [body("name").isString().exists().notEmpty()],
   genreController.createGenre
 );
 router.delete(
