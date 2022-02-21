@@ -26,7 +26,7 @@ const sendEmail = async (email) => {
   });
 
   transporter.verify().then(() => {
-    console.log("Email Service ready");
+    // console.log("Email Service ready");
   });
 
   console.log("Message sent: %s", info.messageId);
